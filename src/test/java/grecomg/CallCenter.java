@@ -22,7 +22,7 @@ public class CallCenter
         o.setMatricola(matricola);
         ops.put(matricola, o);
         feeds.put(matricola, new LinkedList<>());
-        return "";
+        return matricola;
     }
     
     public int registraValutazione(String m, int s, LocalDate d) throws InvalidOperatorException, InvalidScoreException {
@@ -52,13 +52,14 @@ public class CallCenter
     }
     
     public Feedback[] restituisciValutazioni() {
-        Feedback[] fs = new Feedback[1000];
+        LinkedList<Feedback> fs = new LinkedList<Feedback>();
         for (LinkedList<Feedback> l : feeds.values()) {
             for (Feedback f : l) {
-                fs[fs.length] = f;
+                fs.add(f);
             }
         }
-        return fs;
+        Feedback[] f = fs.toArray(new Feedback[0]);
+        return f;
     }
     
     public int valutazioneComplessiva(String matricola) {
@@ -91,28 +92,28 @@ public class CallCenter
     }
     
     public Operator[] valutazioniNegative() {
-        Operator[] negOps = new Operator[1000];
+        LinkedList<Operator> negOps = new LinkedList<Operator>();
         for (Operator o : ops.values()) {
             if (valutazioneComplessiva(o.getMatricola()) < 0)
-                negOps[negOps.length] = o;
+                negOps.add(o);
         }
-        return negOps;
+        return negOps.toArray(new Operator[0]);
     }
     
     public Operator[] best() {
-        Operator[] bestOps = new Operator[100];
+        LinkedList<Operator> bestOps = new LinkedList<Operator>();
         int max = 0;
         for (Operator o : ops.values()) {
             int v = valutazioneComplessiva(o.getMatricola());
             if (v > max) {
-                bestOps = new Operator[100];
-                bestOps[bestOps.length] = o;
+                bestOps = new LinkedList<Operator>();
+                bestOps.add(o);
                 max = v;
             } else if (v == max) {
-                bestOps = new Operator[100];
+                bestOps.add(o);
             }
         }
-        return bestOps;
+        return bestOps.toArray(new Operator[0]);
     }
     
     private String getMatricola(Operator o)
@@ -123,6 +124,4 @@ public class CallCenter
     }
 }
 
-class NotUniqueOperatorException extends RuntimeException {}
-class InvalidOperatorException extends RuntimeException {}
 class InvalidScoreException extends RuntimeException {}
